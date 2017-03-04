@@ -44,7 +44,8 @@ class GenerateSQLliteFile
 
 class LogManager
 {
-    protected static $LOG_FILE_PATH = "F://php_applications//bangla_hadith//db_conversion//db.sql";
+
+    protected static $LOG_FILE_PATH = "D://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//db.sql";
 
     public static function error($LOG_STRING)
     {
@@ -131,7 +132,7 @@ while ($row = mysql_fetch_array($SqlQuery))
 
 LogManager::saveRawLog('COMMIT;');
 
-$output = shell_exec('F:/php_applications/bangla_hadith/db_conversion/sqlite3/sqlite3 "F:\php_applications\bangla_hadith\db_conversion\database.db" -init "F:\php_applications\bangla_hadith\db_conversion\db.sql"');
+$output = shell_exec('D:/xampp/htdocs/bangla_hadith_android_sqlite_generate_php/sqlite3/sqlite3 "D:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\database.db" -init "D:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\db.sql"');
 echo "<pre>$output</pre>";
 
 ?>
