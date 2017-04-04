@@ -71,47 +71,58 @@ class LogManager
     {
         file_put_contents(self::$LOG_FILE_PATH,$raw_string . "\n\n" , FILE_APPEND);
     }
+	
+	public static function setLogFilePath($log_file_name)
+	{
+		self::$LOG_FILE_PATH = "D://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//db_book".$log_file_name.".sql";
+	}
 }
 
-$book_id = 1;
 
-$Generation = new GenerateSQLliteFile;
+//$book_id = 2;
 
-LogManager::saveRawLog('BEGIN TRANSACTION;');
-
-LogManager::saveRawLog('CREATE TABLE IF NOT EXISTS "android_metadata" ("locale" TEXT);INSERT INTO android_metadata VALUES("en_US");');
-LogManager::saveRawLog('INSERT INTO android_metadata VALUES("en_US");');
-
-LogManager::saveRawLog('DROP TABLE IF EXISTS `section`;');
-LogManager::saveRawLog('CREATE TABLE section ("id" INTEGER, "name" INTEGER, "total_content" INTEGER, PRIMARY KEY("id"));');
-
-LogManager::saveRawLog('DROP TABLE IF EXISTS `content`;');
-LogManager::saveRawLog('CREATE TABLE `content` ("id" INTEGER, "section_id" INTEGER, PRIMARY KEY("id"));');
-
-LogManager::saveRawLog('DROP TABLE IF EXISTS `content_fts`;');
-LogManager::saveRawLog('CREATE VIRTUAL TABLE "content_fts" USING fts4 ("question" TEXT,"answer" TEXT,"note" TEXT);');
-
-
-$SqlQuery=$Generation->MySQLQuery("SELECT book_section.secID AS id, book_section.SectionName AS name, ( SELECT COUNT(books_content.contentID) AS total_content FROM books_content WHERE books_content.sectionID = book_section.secID ) AS total_content FROM book_section WHERE book_section.BookID = ".$book_id." AND book_section.sectionActive = 1");
-while ($row = mysql_fetch_array($SqlQuery))
+for ($book_id = 40; $book_id <= 47; $book_id++)
 {
-    LogManager::saveRawLog("INSERT INTO section ('id', 'name', 'total_content') VALUES (".$row['id'].", '".strip_tags(htmlentities($row['name'], ENT_QUOTES))."', ".$row['total_content'].");");
-}
+    $Generation = new GenerateSQLliteFile;
+
+	LogManager::setLogFilePath(''.$book_id);
+
+	LogManager::saveRawLog('BEGIN TRANSACTION;');
+
+	LogManager::saveRawLog('CREATE TABLE IF NOT EXISTS "android_metadata" ("locale" TEXT);INSERT INTO android_metadata VALUES("en_US");');
+	LogManager::saveRawLog('INSERT INTO android_metadata VALUES("en_US");');
+
+	LogManager::saveRawLog('DROP TABLE IF EXISTS `section`;');
+	LogManager::saveRawLog('CREATE TABLE section ("id" INTEGER, "name" INTEGER, "total_content" INTEGER, PRIMARY KEY("id"));');
+
+	LogManager::saveRawLog('DROP TABLE IF EXISTS `content`;');
+	LogManager::saveRawLog('CREATE TABLE `content` ("id" INTEGER, "section_id" INTEGER, PRIMARY KEY("id"));');
+
+	LogManager::saveRawLog('DROP TABLE IF EXISTS `content_fts`;');
+	LogManager::saveRawLog('CREATE VIRTUAL TABLE "content_fts" USING fts4 ("question" TEXT,"answer" TEXT,"note" TEXT);');
 
 
-$SqlQuery=$Generation->MySQLQuery("SELECT books_content.contentID AS id, books_content.sectionID as section_id, books_content.MainQ as question, books_content.MainA as answer, IFNULL(books_content.Mnote,".'"'."".'"'.") as note FROM books_content WHERE books_content.bookID = ".$book_id." AND books_content.active = 1");
-while ($row = mysql_fetch_array($SqlQuery))
-{
+	$SqlQuery=$Generation->MySQLQuery("SELECT book_section.secID AS id, book_section.SectionName AS name, ( SELECT COUNT(books_content.contentID) AS total_content FROM books_content WHERE books_content.sectionID = book_section.secID ) AS total_content FROM book_section WHERE book_section.BookID = ".$book_id." AND book_section.sectionActive = 1");
+	while ($row = mysql_fetch_array($SqlQuery))
+	{
+		LogManager::saveRawLog("INSERT INTO section ('id', 'name', 'total_content') VALUES (".$row['id'].", '".strip_tags(htmlentities($row['name'], ENT_QUOTES))."', ".$row['total_content'].");");
+	}
 
-    LogManager::saveRawLog("INSERT INTO content ('id', 'section_id') VALUES (".$row['id'].", ".$row['section_id'].");");
 
-    LogManager::saveRawLog("INSERT INTO content_fts ('docid', 'question', 'answer', 'note') VALUES (".$row['id'].", '".strip_tags(htmlentities($row['question'], ENT_QUOTES))."', '".strip_tags(htmlentities($row['answer'], ENT_QUOTES))."', '".strip_tags(htmlentities($row['note'], ENT_QUOTES))."');");
+	$SqlQuery=$Generation->MySQLQuery("SELECT books_content.contentID AS id, books_content.sectionID as section_id, books_content.MainQ as question, books_content.MainA as answer, IFNULL(books_content.Mnote,".'"'."".'"'.") as note FROM books_content WHERE books_content.bookID = ".$book_id." AND books_content.active = 1");
+	while ($row = mysql_fetch_array($SqlQuery))
+	{
 
-}
+		LogManager::saveRawLog("INSERT INTO content ('id', 'section_id') VALUES (".$row['id'].", ".$row['section_id'].");");
 
-LogManager::saveRawLog('COMMIT;');
+		LogManager::saveRawLog("INSERT INTO content_fts ('docid', 'question', 'answer', 'note') VALUES (".$row['id'].", '".strip_tags(htmlentities($row['question'], ENT_QUOTES))."', '".strip_tags(htmlentities($row['answer'], ENT_QUOTES))."', '".strip_tags(htmlentities($row['note'], ENT_QUOTES))."');");
 
-$output = shell_exec('D:/xampp/htdocs/bangla_hadith_android_sqlite_generate_php/sqlite3/sqlite3 "D:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\database_book.db" -init "D:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\db_book.sql"');
-echo "<pre>$output</pre>";
+	}
+
+	LogManager::saveRawLog('COMMIT;');
+
+	$output = shell_exec('D:/xampp/htdocs/bangla_hadith_android_sqlite_generate_php/sqlite3/sqlite3 "D:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\ob_'.$book_id.'.db" -init "D:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\db_book'.$book_id.'.sql"');
+	echo "<pre>$output</pre>";
+} 
 
 ?>

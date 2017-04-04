@@ -71,11 +71,25 @@ class LogManager
     {
         file_put_contents(self::$LOG_FILE_PATH,$raw_string . "\n\n" , FILE_APPEND);
     }
+	
+	public static function setLogFilePath($log_file_name)
+	{
+		self::$LOG_FILE_PATH = "D://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//db_hadith_".$log_file_name.".sql";
+	}
 }
 
-$book_id = 1;
+//$book_id = 2;
+
+$bookIDs = array(1, 2, 3, 4, 6, 8, 9, 11, 12, 13, 14, 15, 23, 18, 19, 20, 21, 22, 24, 25, 26);
+
+for ($iPointer = 0; $iPointer < count($bookIDs); $iPointer++)
+{
+	
+	$book_id = $bookIDs[$iPointer];
 
 $Generation = new GenerateSQLliteFile;
+
+LogManager::setLogFilePath(''.$book_id);
 
 LogManager::saveRawLog('BEGIN TRANSACTION;');
 
@@ -121,7 +135,8 @@ while ($row = mysql_fetch_array($SqlQuery))
 
 }
 
-$SqlQuery=$Generation->MySQLQuery("SELECT hadithmain.HadithID AS id, (@cnt := @cnt + 1) AS sequence, hadithmain.HadithStatus AS statusId, hadithmain.CheckStatus AS if_cross_checked, hadithmain.chapterID AS chapterId, hadithmain.SectionID AS sectionId, hadithmain.HadithNo AS hadithNo, hadithmain.BanglaHadith AS hadithBengali, hadithmain.EnglishHadith AS hadithEnglish, hadithmain.ArabicHadith AS hadithArabic, hadithmain.HadithNote AS note, ( SELECT rabihadith.rabiBangla FROM rabihadith WHERE rabihadith.rabiID = hadithmain.RabiID ) AS rabiNameBangla, ( SELECT rabihadith.rabiEnglish FROM rabihadith WHERE rabihadith.rabiID = hadithmain.RabiID ) AS rabiNameEnglish, ( SELECT hadithsource.SourceNameEN FROM hadithsource WHERE hadithsource.SourceID = hadithmain.SourceID ) AS publisherNameEnglish, ( SELECT hadithsource.SourceNameBD FROM hadithsource WHERE hadithsource.SourceID = hadithmain.SourceID ) AS publisherNameBangla, ( SELECT hadithstatus.StatusBG FROM hadithstatus WHERE hadithstatus.StatusID = hadithmain.HadithStatus ) AS status_bn, ( SELECT hadithstatus.StatusEN FROM hadithstatus WHERE hadithstatus.StatusID = hadithmain.HadithStatus ) AS status_en FROM `hadithmain` CROSS JOIN (SELECT @cnt := 0) AS dummy WHERE hadithmain.HadithActive = 1 AND hadithmain.BookID = 1 ORDER BY SectionID ASC");
+$SqlQuery=$Generation->MySQLQuery("SELECT hadithmain.HadithID AS id, (@cnt := @cnt + 1) AS sequence, hadithmain.HadithStatus AS statusId, hadithmain.CheckStatus AS if_cross_checked, hadithmain.chapterID AS chapterId, hadithmain.SectionID AS sectionId, hadithmain.HadithNo AS hadithNo, hadithmain.BanglaHadith AS hadithBengali, hadithmain.EnglishHadith AS hadithEnglish, hadithmain.ArabicHadith AS hadithArabic, hadithmain.HadithNote AS note, ( SELECT rabihadith.rabiBangla FROM rabihadith WHERE rabihadith.rabiID = hadithmain.RabiID ) AS rabiNameBangla, ( SELECT rabihadith.rabiEnglish FROM rabihadith WHERE rabihadith.rabiID = hadithmain.RabiID ) AS rabiNameEnglish, ( SELECT hadithsource.SourceNameEN FROM hadithsource WHERE hadithsource.SourceID = hadithmain.SourceID ) AS publisherNameEnglish, ( SELECT hadithsource.SourceNameBD FROM hadithsource WHERE hadithsource.SourceID = hadithmain.SourceID ) AS publisherNameBangla, ( SELECT hadithstatus.StatusBG FROM hadithstatus WHERE hadithstatus.StatusID = hadithmain.HadithStatus ) AS status_bn, ( SELECT hadithstatus.StatusEN FROM hadithstatus WHERE hadithstatus.StatusID = hadithmain.HadithStatus ) AS status_en FROM `hadithmain` CROSS JOIN (SELECT @cnt := 0) AS dummy WHERE hadithmain.HadithActive = 1 AND hadithmain.BookID = ".$book_id." ORDER BY hadithmain.HadithNo ASC");
+
 while ($row = mysql_fetch_array($SqlQuery))
 {
     LogManager::saveRawLog("INSERT INTO content (id,sequence,statusId,if_cross_checked,chapterId,sectionId,hadithNo) VALUES (".intval($row['id']).", ".intval($row['sequence']).", ".intval($row['statusId']).",".intval($row['if_cross_checked']).",".intval($row['chapterId']).",".intval($row['sectionId']).",".intval($row['hadithNo']).");");
@@ -132,7 +147,8 @@ while ($row = mysql_fetch_array($SqlQuery))
 
 LogManager::saveRawLog('COMMIT;');
 
-$output = shell_exec('D:/xampp/htdocs/bangla_hadith_android_sqlite_generate_php/sqlite3/sqlite3 "D:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\database.db" -init "D:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\db.sql"');
+$output = shell_exec('D:/xampp/htdocs/bangla_hadith_android_sqlite_generate_php/sqlite3/sqlite3 "D:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\hb_'.$book_id.'.db" -init "D:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\db_hadith_'.$book_id.'.sql"');
 echo "<pre>$output</pre>";
 
+}
 ?>
