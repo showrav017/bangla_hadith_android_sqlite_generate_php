@@ -81,7 +81,7 @@ class LogManager
 
 //$book_id = 2;
 
-for ($book_id = 40; $book_id <= 47; $book_id++)
+for ($book_id = 1; $book_id <= 1; $book_id++)
 {
     $Generation = new GenerateSQLliteFile;
 
