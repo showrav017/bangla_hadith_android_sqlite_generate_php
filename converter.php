@@ -117,6 +117,8 @@ $Generation = new GenerateSQLliteFile;
 
 //$bookIDs = array(1);
 
+//$bookIDs = array(1);
+
 for ($iPointer = 0; $iPointer < count($bookIDs); $iPointer++)
 {
 	
@@ -175,6 +177,7 @@ $SqlQuery=$Generation->MySQLQuery("SELECT hadithmain.HadithID AS id, (@cnt := @c
 $seq = 0;
 $sectionID = 0;
 
+
 while ($row = $SqlQuery->fetch_assoc())
 {
 	if($sectionID != intval($row['sectionId']))
@@ -186,6 +189,7 @@ while ($row = $SqlQuery->fetch_assoc())
     LogManager::saveRawLog("INSERT INTO content (id,sequence,statusId,if_cross_checked,chapterId,sectionId,hadithNo) VALUES (".intval($row['id']).", ".$seq.", ".intval($row['statusId']).",".intval($row['if_cross_checked']).",".intval($row['chapterId']).",".intval($row['sectionId']).",".intval($row['hadithNo']).");");
 
     LogManager::saveRawLog('INSERT INTO content_fts (docid, hadithBengali, hadithEnglish, hadithArabic, note, rabiNameBangla, rabiNameEnglish, publisherNameEnglish, publisherNameBangla, status_bn, status_en, chapter_en, chapter_bn, chapter_ar, bn_explanation) VALUES ('.$row['id'].', "'.strip_tags(htmlentities($row['hadithBengali'], ENT_QUOTES)).'", "'.strip_tags(htmlentities($row['hadithEnglish'], ENT_QUOTES)).'", "'.strip_tags(htmlentities($row['hadithArabic'], ENT_QUOTES)).'", "'.strip_tags(htmlentities($row['note'], ENT_QUOTES)).'", "'.strip_tags(htmlentities($row['rabiNameBangla'], ENT_QUOTES)).'", "'.strip_tags(htmlentities($row['rabiNameEnglish'], ENT_QUOTES)).'", "'.strip_tags(htmlentities($row['publisherNameEnglish'], ENT_QUOTES)).'", "'.strip_tags(htmlentities($row['publisherNameBangla'], ENT_QUOTES)).'", "'.strip_tags(htmlentities($row['status_bn'], ENT_QUOTES)).'", "'.strip_tags(htmlentities($row['status_en'], ENT_QUOTES)).'", "'.strip_tags(htmlentities($row['chapter_en'], ENT_QUOTES)).'", "'.strip_tags(htmlentities($row['chapter_bn'], ENT_QUOTES)).'", "'.strip_tags(htmlentities($row['chapter_ar'], ENT_QUOTES)).'", "'.strip_tags(htmlentities($row['explanation'], ENT_QUOTES)).'");');
+	
 	
 	$seq = $seq + 1;
 }
