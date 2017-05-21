@@ -23,16 +23,39 @@ class GenerateSQLliteFile
     }
 
     private function dbConnect(){
-        $this->db = mysql_connect(self::DB_SERVER,self::DB_USER,self::DB_PASSWORD) or die(mysql_error());
-        if($this->db)
-            mysql_select_db(self::DB,$this->db);
+        $this->db = new mysqli(self::DB_SERVER,self::DB_USER,self::DB_PASSWORD, self::DB);
+		if ($this->db->connect_errno) {
+			echo "Sorry, this website is experiencing problems.";
 
-        mysql_query("SET NAMES 'utf8'", $this->db);
+			// Something you should not do on a public site, but this example will show you
+			// anyways, is print out MySQL error related information -- you might log this
+			echo "Error: Failed to make a MySQL connection, here is why: \n";
+			echo "Errno: " . $this->db->connect_errno . "\n";
+			echo "Error: " . $this->db->connect_error . "\n";
+			
+			// You might want to show them something nice, but we will simply exit
+			exit;
+		}
+		
+		$this->db->query("SET NAMES 'utf8'");
     }
 
     public function MySQLQuery($query)
     {
-        return mysql_query($query,$this->db);
+        if (!$result = $this->db->query($query)) {
+			// Oh no! The query failed. 
+			echo "Sorry, the website is experiencing problems.";
+
+			// Again, do not do this on a public site, but we'll show you how
+			// to get the error information
+			echo "Error: Our query failed to execute and here is why: \n";
+			echo "Query: " . $query . "\n";
+			echo "Errno: " . $this->db->errno . "\n";
+			echo "Error: " . $this->db->error . "\n";
+			exit;
+		}
+		
+        return $result;
     }
 
     public function SQLLiteQuery($query)
@@ -40,6 +63,10 @@ class GenerateSQLliteFile
         $this->SqlLiteDB->exec($query);
     }
 
+	public function __destruct()
+	{
+		$this->db->close();
+	}
 }
 
 class LogManager
@@ -78,11 +105,23 @@ class LogManager
 	}
 }
 
+$BookIDs = array();
+
+$Gen = new GenerateSQLliteFile;
+$SqlQuery=$Gen->MySQLQuery("SELECT books_name.bookID FROM books_name WHERE books_name.Active = 1");
+
+while ($row = $SqlQuery->fetch_assoc())
+{
+	$BookIDs[] = $row['bookID'];
+}
+	
 
 //$book_id = 2;
 
-for ($book_id = 1; $book_id <= 1; $book_id++)
+for ($iPointer = 0; $iPointer < count($BookIDs); $iPointer++)
 {
+	$book_id = $BookIDs[$iPointer];
+	
     $Generation = new GenerateSQLliteFile;
 
 	LogManager::setLogFilePath(''.$book_id);
@@ -96,26 +135,36 @@ for ($book_id = 1; $book_id <= 1; $book_id++)
 	LogManager::saveRawLog('CREATE TABLE section ("id" INTEGER, "name" INTEGER, "total_content" INTEGER, PRIMARY KEY("id"));');
 
 	LogManager::saveRawLog('DROP TABLE IF EXISTS `content`;');
-	LogManager::saveRawLog('CREATE TABLE `content` ("id" INTEGER, "section_id" INTEGER, PRIMARY KEY("id"));');
+	LogManager::saveRawLog('CREATE TABLE `content` ("id" INTEGER, "sequence" INTEGER, "section_id" INTEGER, PRIMARY KEY("id"));');
 
 	LogManager::saveRawLog('DROP TABLE IF EXISTS `content_fts`;');
 	LogManager::saveRawLog('CREATE VIRTUAL TABLE "content_fts" USING fts4 ("question" TEXT,"answer" TEXT,"note" TEXT);');
 
 
 	$SqlQuery=$Generation->MySQLQuery("SELECT book_section.secID AS id, book_section.SectionName AS name, ( SELECT COUNT(books_content.contentID) AS total_content FROM books_content WHERE books_content.sectionID = book_section.secID ) AS total_content FROM book_section WHERE book_section.BookID = ".$book_id." AND book_section.sectionActive = 1");
-	while ($row = mysql_fetch_array($SqlQuery))
+	while ($row = $SqlQuery->fetch_assoc())
 	{
 		LogManager::saveRawLog("INSERT INTO section ('id', 'name', 'total_content') VALUES (".$row['id'].", '".strip_tags(htmlentities($row['name'], ENT_QUOTES))."', ".$row['total_content'].");");
 	}
 
-
-	$SqlQuery=$Generation->MySQLQuery("SELECT books_content.contentID AS id, books_content.sectionID as section_id, books_content.MainQ as question, books_content.MainA as answer, IFNULL(books_content.Mnote,".'"'."".'"'.") as note FROM books_content WHERE books_content.bookID = ".$book_id." AND books_content.active = 1");
-	while ($row = mysql_fetch_array($SqlQuery))
+	$seq = 0;
+	$sectionID = 0;
+	
+	$SqlQuery=$Generation->MySQLQuery("SELECT books_content.contentID AS id, books_content.sectionID as section_id, books_content.MainQ as question, books_content.MainA as answer, IFNULL(books_content.Mnote,".'"'."".'"'.") as note FROM books_content WHERE books_content.bookID = ".$book_id." AND books_content.active = 1 ORDER BY sectionID ASC");
+	while ($row = $SqlQuery->fetch_assoc())
 	{
+		
+		if($sectionID != intval($row['section_id']))
+		{
+			$sectionID = intval($row['section_id']);
+			$seq = 0;
+		}
 
-		LogManager::saveRawLog("INSERT INTO content ('id', 'section_id') VALUES (".$row['id'].", ".$row['section_id'].");");
+		LogManager::saveRawLog("INSERT INTO content ('id', 'sequence', 'section_id') VALUES (".$row['id'].", ".$seq.", ".$row['section_id'].");");
 
 		LogManager::saveRawLog("INSERT INTO content_fts ('docid', 'question', 'answer', 'note') VALUES (".$row['id'].", '".strip_tags(htmlentities($row['question'], ENT_QUOTES))."', '".strip_tags(htmlentities($row['answer'], ENT_QUOTES))."', '".strip_tags(htmlentities($row['note'], ENT_QUOTES))."');");
+		
+		$seq = $seq + 1;
 
 	}
 
