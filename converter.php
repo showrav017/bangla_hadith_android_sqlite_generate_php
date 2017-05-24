@@ -110,8 +110,7 @@ class LogManager
 
 $problemetic_bookIDs = array(22);	// Sequence is not working properly.
 
-$bookIDs = array(1, 2, 3, 4, 6, 8, 9, 11, 12, 13, 14, 15, 23, 18, 19, 20, 21, 24, 25, 26);
-
+$bookIDs = array(1, 2, 3, 4, 6, 8, 9, 11, 12, 13, 14, 15, 23, 18, 19, 20, 21, 24, 25, 26, 22, 27, 28);
 
 $Generation = new GenerateSQLliteFile;
 
@@ -172,7 +171,7 @@ while ($row = mysql_fetch_array($SqlQuery))
 
 }*/
 
-$SqlQuery=$Generation->MySQLQuery("SELECT hadithmain.HadithID AS id, (@cnt := @cnt + 1) AS sequence, hadithmain.HadithStatus AS statusId, hadithmain.CheckStatus AS if_cross_checked, hadithmain.chapterID AS chapterId, hadithmain.SectionID AS sectionId, hadithmain.HadithNo AS hadithNo, hadithmain.BanglaHadith AS hadithBengali, hadithmain.EnglishHadith AS hadithEnglish, hadithmain.ArabicHadith AS hadithArabic, hadithmain.HadithNote AS note, ( SELECT rabihadith.rabiBangla FROM rabihadith WHERE rabihadith.rabiID = hadithmain.RabiID ) AS rabiNameBangla, ( SELECT rabihadith.rabiEnglish FROM rabihadith WHERE rabihadith.rabiID = hadithmain.RabiID ) AS rabiNameEnglish, ( SELECT hadithsource.SourceNameEN FROM hadithsource WHERE hadithsource.SourceID = hadithmain.SourceID ) AS publisherNameEnglish, ( SELECT hadithsource.SourceNameBD FROM hadithsource WHERE hadithsource.SourceID = hadithmain.SourceID ) AS publisherNameBangla, ( SELECT hadithstatus.StatusBG FROM hadithstatus WHERE hadithstatus.StatusID = hadithmain.HadithStatus ) AS status_bn, ( SELECT hadithstatus.StatusEN FROM hadithstatus WHERE hadithstatus.StatusID = hadithmain.HadithStatus ) AS status_en, hadithchapter.ChapterEN as chapter_en, hadithchapter.ChapterBG AS chapter_bn, hadithchapter.ChapterAR AS chapter_ar, hadithexplanation.explanation FROM `hadithmain` LEFT JOIN hadithchapter ON hadithchapter.chapID = hadithmain.chapterID LEFT JOIN hadithexplanation ON hadithexplanation.hadithID = hadithmain.HadithID CROSS JOIN (SELECT @cnt := 0) AS dummy WHERE hadithmain.HadithActive = 1 AND hadithmain.BookID = ".$book_id." ORDER BY hadithmain.HadithNo ASC");
+$SqlQuery=$Generation->MySQLQuery("SELECT hadithmain.HadithID AS id, (@cnt := @cnt + 1) AS sequence, hadithmain.HadithStatus AS statusId, hadithmain.CheckStatus AS if_cross_checked, hadithmain.chapterID AS chapterId, hadithmain.SectionID AS sectionId, hadithmain.HadithNo AS hadithNo, hadithmain.BanglaHadith AS hadithBengali, hadithmain.EnglishHadith AS hadithEnglish, hadithmain.ArabicHadith AS hadithArabic, hadithmain.HadithNote AS note, ( SELECT rabihadith.rabiBangla FROM rabihadith WHERE rabihadith.rabiID = hadithmain.RabiID ) AS rabiNameBangla, ( SELECT rabihadith.rabiEnglish FROM rabihadith WHERE rabihadith.rabiID = hadithmain.RabiID ) AS rabiNameEnglish, ( SELECT hadithsource.SourceNameEN FROM hadithsource WHERE hadithsource.SourceID = hadithmain.SourceID ) AS publisherNameEnglish, ( SELECT hadithsource.SourceNameBD FROM hadithsource WHERE hadithsource.SourceID = hadithmain.SourceID ) AS publisherNameBangla, ( SELECT hadithstatus.StatusBG FROM hadithstatus WHERE hadithstatus.StatusID = hadithmain.HadithStatus ) AS status_bn, ( SELECT hadithstatus.StatusEN FROM hadithstatus WHERE hadithstatus.StatusID = hadithmain.HadithStatus ) AS status_en, hadithchapter.ChapterEN as chapter_en, hadithchapter.ChapterBG AS chapter_bn, hadithchapter.ChapterAR AS chapter_ar, hadithexplanation.explanation FROM `hadithmain` LEFT JOIN hadithchapter ON hadithchapter.chapID = hadithmain.chapterID LEFT JOIN hadithexplanation ON hadithexplanation.hadithID = hadithmain.HadithID CROSS JOIN (SELECT @cnt := 0) AS dummy WHERE hadithmain.HadithActive = 1 AND hadithmain.BookID = ".$book_id." ORDER BY ".($book_id == 22 ?"hadithmain.SectionID, hadithmain.HadithNo":"hadithmain.HadithNo")." ASC");
 
 $seq = 0;
 $sectionID = 0;
