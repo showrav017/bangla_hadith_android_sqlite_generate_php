@@ -134,4 +134,6 @@ while ($row = $SqlQuery->fetch_assoc())
     LogManager::saveRawLog("INSERT INTO ob_categories (id, name, total_books) VALUES ('".$row['id']."', '".$row['name']."', ".$row['total_books'].");");
 }
 
+LogManager::saveRawLog("INSERT INTO `notices` (`title`, `content`, `datetime`, `status`) VALUES ('আস-সালামু আলাইকুম', 'বাংলা হাদিস এপ ব্যবহার করার জন্য জাজাকাল্লাহু খায়রান। আমরা আশা করি এই এপের দ্বারা আপনি বাংলা ভাষায় বিশুদ্ধ ইসলামের জ্ঞান অর্জন করতে পারবেন ইন-শা-আল্লাহ। আমাদের জন্য দুয়া করবেন এবং সাধ্যমত অন্যের কাছে এই এপ তথা ইসলামের বিশুদ্ধ জ্ঞানকে পৌঁছে দিতে সচেষ্ট হবেন। \n আল্লাহ্ আমাদের সকলের নেক আমলগুলিকে কবুল করুন, আমিন।', 'Friday, May 26, 2017', 1);");
+
 echo "Done";
