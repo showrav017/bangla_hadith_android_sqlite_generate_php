@@ -11,7 +11,7 @@ class GenerateSQLliteFile
     const DB_SERVER = "localhost";
     const DB_USER = "root";
     const DB_PASSWORD = "";
-    const DB = "hadithbd";
+    const DB = "hadithbd_bkp";
 
     private $db = NULL;
     private $SqlLiteDB=NULL;
@@ -45,7 +45,7 @@ class GenerateSQLliteFile
 class LogManager
 {
 
-    protected static $LOG_FILE_PATH = "D://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//db_book.sql";
+    protected static $LOG_FILE_PATH = "F://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//db_book.sql";
 
     public static function error($LOG_STRING)
     {
@@ -74,15 +74,20 @@ class LogManager
 	
 	public static function setLogFilePath($log_file_name)
 	{
-		self::$LOG_FILE_PATH = "D://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//db_book".$log_file_name.".sql";
+		self::$LOG_FILE_PATH = "F://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//db_book".$log_file_name.".sql";
 	}
 }
 
 
+$bookIDs = array(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,24,23,25,26,27,28,29,30,31,32,33,39,35,36,37,38,40,41,42,43,44,45,46,47);
+
 //$book_id = 2;
 
-for ($book_id = 1; $book_id <= 1; $book_id++)
+for ($iPointer = 0; $iPointer < count($bookIDs); $iPointer++)
 {
+	
+	$book_id = $bookIDs[$iPointer];
+	
     $Generation = new GenerateSQLliteFile;
 
 	LogManager::setLogFilePath(''.$book_id);
@@ -121,7 +126,7 @@ for ($book_id = 1; $book_id <= 1; $book_id++)
 
 	LogManager::saveRawLog('COMMIT;');
 
-	$output = shell_exec('D:/xampp/htdocs/bangla_hadith_android_sqlite_generate_php/sqlite3/sqlite3 "D:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\ob_'.$book_id.'.db" -init "D:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\db_book'.$book_id.'.sql"');
+	$output = shell_exec('F:/xampp/htdocs/bangla_hadith_android_sqlite_generate_php/sqlite3/sqlite3 "F:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\ob_'.$book_id.'.db" -init "F:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\db_book'.$book_id.'.sql"');
 	echo "<pre>$output</pre>";
 } 
 

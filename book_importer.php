@@ -11,7 +11,7 @@ class MySqlCOnnection
     const DB_SERVER = "localhost";
     const DB_USER = "root";
     const DB_PASSWORD = "";
-    const DB = "hadithbd";
+    const DB = "hadithbd_bkp";
 
     private $db = NULL;
 
@@ -69,7 +69,7 @@ class MySqlCOnnection
 class LogManager
 {
 
-    protected static $LOG_FILE_PATH = "D://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//import.sql";
+    protected static $LOG_FILE_PATH = "F://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//import.sql";
 
     public static function error($LOG_STRING)
     {
@@ -98,11 +98,11 @@ class LogManager
 	
 	public static function setLogFilePath($log_file_name)
 	{
-		self::$LOG_FILE_PATH = "D://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//db_hadith_".$log_file_name.".sql";
+		self::$LOG_FILE_PATH = "F://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//db_hadith_".$log_file_name.".sql";
 	}
 }
 
-LogManager::saveRawLog("DROP TABLE IF EXISTS `books`;CREATE TABLE 'books' ( 'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'hadithbd_id' INTEGER, 'book_name' TEXT, 'book_type' TEXT, 'device_book_version' TEXT, 'server_book_version' TEXT, 'current_book_size_in_bytes' TEXT, 'book_category_id' INTEGER, 'meta_data' TEXT, 'sort_priority' INTEGER, 'download_status' INTEGER, 'if_downloading' INTEGER );DROP TABLE IF EXISTS ob_categories;CREATE TABLE ob_categories ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'name' TEXT, 'total_books' INTEGER);");
+LogManager::saveRawLog("DROP TABLE IF EXISTS `books`;CREATE TABLE 'books' ( 'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'hadithbd_id' INTEGER, 'book_name' TEXT, 'book_type' TEXT, 'device_book_version' TEXT, 'server_book_version' TEXT, 'current_book_size_in_bytes' TEXT, 'book_category_id' INTEGER, 'meta_data' TEXT, 'sort_priority' INTEGER, 'download_status' INTEGER);DROP TABLE IF EXISTS ob_categories;CREATE TABLE ob_categories ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'name' TEXT, 'total_books' INTEGER);");
 
 $mysqlConnect = new MySqlCOnnection();
 
@@ -111,14 +111,14 @@ $SQL = "SELECT hadithbook.BookID AS hadithbd_id, hadithbook.BookNameBD AS book_n
 
 $SQL .= " UNION ALL ";
 
-$SQL .= "SELECT books_name.bookID AS hadithbd_id, books_name.Book_nameBD AS book_name, 'ob' AS book_type, '1' AS book_version, booktype AS book_category_id, CONCAT( '{writer_name:".'"'."', HTML_Encode ( IFNULL(( SELECT book_writter.writter_nameBN FROM book_writter WHERE book_writter.wrID = books_name.writterID ), ".'"'."".'"'." )), '".'"'.", no_of_section:', ( HTML_Encode ( IFNULL(( SELECT COUNT(*) FROM book_section WHERE book_section.BookID = books_name.bookID ), ".'"'."".'"'." ))), ', no_of_content:', ( HTML_Encode ( IFNULL(( SELECT COUNT(*) FROM books_content WHERE books_content.bookID = books_name.bookID ), ".'"'."".'"'." ))), '}' ) AS meta_data, 0 AS sort_priority, '1' AS download_status FROM books_name WHERE books_name.Active = 1";
+$SQL .= "SELECT books_name.bookID AS hadithbd_id, books_name.Book_nameBD AS book_name, 'ob' AS book_type, '1' AS book_version, booktype AS book_category_id, CONCAT( '{writer_name:".'"'."', HTML_Encode ( IFNULL(( SELECT book_writter.writter_nameBN FROM book_writter WHERE book_writter.wrID = books_name.writterID ), ".'"'."".'"'." )), '".'"'.", no_of_section:', ( HTML_Encode ( IFNULL(( SELECT COUNT(*) FROM book_section WHERE book_section.BookID = books_name.bookID ), ".'"'."".'"'." ))), ', no_of_content:', ( HTML_Encode ( IFNULL(( SELECT COUNT(*) FROM books_content WHERE books_content.bookID = books_name.bookID ), ".'"'."".'"'." ))), '}' ) AS meta_data, 0 AS sort_priority, '0' AS download_status FROM books_name WHERE books_name.Active = 1";
 
 
 $SqlQuery=$mysqlConnect->MySQLQuery($SQL);
 
 while ($row = $SqlQuery->fetch_assoc())
 {
-    LogManager::saveRawLog("INSERT INTO books (`hadithbd_id`, `book_name`, `book_type`, `device_book_version`, `server_book_version`, `current_book_size_in_bytes`, `book_category_id`, `meta_data`, `sort_priority`, `download_status`, `if_downloading`) VALUES ('".$row['hadithbd_id']."', '".$row['book_name']."', '".$row['book_type']."', '".$row['book_version']."', '".$row['book_version']."', '51879936', '".$row['book_category_id']."', '".$row['meta_data']."', '".$row['sort_priority']."', '".$row['download_status']."', 0);");
+    LogManager::saveRawLog("INSERT INTO books (`hadithbd_id`, `book_name`, `book_type`, `device_book_version`, `server_book_version`, `current_book_size_in_bytes`, `book_category_id`, `meta_data`, `sort_priority`, `download_status`) VALUES ('".$row['hadithbd_id']."', '".$row['book_name']."', '".$row['book_type']."', '".$row['book_version']."', '".$row['book_version']."', '51879936', '".$row['book_category_id']."', '".$row['meta_data']."', '".$row['sort_priority']."', '".$row['download_status']."');");
 }
 
 $SqlQuery=$mysqlConnect->MySQLQuery("SELECT books_type.btypeID as id, books_type.bookCat as name, IFNULL(( SELECT COUNT(*) AS total FROM books_name WHERE books_name.booktype = books_type.btypeID ), 0 ) as total_books FROM books_type");

@@ -11,7 +11,7 @@ class GenerateSQLliteFile
     const DB_SERVER = "localhost";
     const DB_USER = "root";
     const DB_PASSWORD = "";
-    const DB = "hadithbd";
+    const DB = "hadithbd_bkp";
 
     private $db = NULL;
     private $SqlLiteDB=NULL;

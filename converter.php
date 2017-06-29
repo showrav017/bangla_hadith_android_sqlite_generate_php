@@ -11,7 +11,7 @@ class GenerateSQLliteFile
     const DB_SERVER = "localhost";
     const DB_USER = "root";
     const DB_PASSWORD = "";
-    const DB = "hadithbd";
+    const DB = "hadithbd_bkp";
 
     private $db = NULL;
     private $SqlLiteDB=NULL;
@@ -73,7 +73,7 @@ class GenerateSQLliteFile
 class LogManager
 {
 
-    protected static $LOG_FILE_PATH = "D://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//db.sql";
+    protected static $LOG_FILE_PATH = "F://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//db.sql";
 
     public static function error($LOG_STRING)
     {
@@ -102,7 +102,7 @@ class LogManager
 	
 	public static function setLogFilePath($log_file_name)
 	{
-		self::$LOG_FILE_PATH = "D://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//db_hadith_".$log_file_name.".sql";
+		self::$LOG_FILE_PATH = "F://xampp//htdocs//bangla_hadith_android_sqlite_generate_php//db_hadith_".$log_file_name.".sql";
 	}
 }
 
@@ -196,7 +196,7 @@ while ($row = $SqlQuery->fetch_assoc())
 
 LogManager::saveRawLog('COMMIT;');
 
-$output = shell_exec('D:/xampp/htdocs/bangla_hadith_android_sqlite_generate_php/sqlite3/sqlite3 "D:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\hb_'.$book_id.'.db" -init "D:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\db_hadith_'.$book_id.'.sql"');
+$output = shell_exec('F:/xampp/htdocs/bangla_hadith_android_sqlite_generate_php/sqlite3/sqlite3 "F:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\hb_'.$book_id.'.db" -init "F:\xampp\htdocs\bangla_hadith_android_sqlite_generate_php\db_hadith_'.$book_id.'.sql"');
 echo "<pre>$output</pre>";
 
 }
